@@ -31,6 +31,11 @@ environment.systemPackages = with pkgs; [
   gobject-introspection
   python3Packages.pygobject3
   ninja  # Required for build
+  pkg-config  # Required for build
+  cairo  # Required for GTK
+  pango  # Required for GTK
+  glib  # Required for GTK
+  python3Packages.pycairo  # Required for GTK
 ];
 ```
 
