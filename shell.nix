@@ -7,10 +7,10 @@ pkgs.mkShell {
     python3Packages.virtualenv
     python3Packages.pygobject3
     python3Packages.pycairo
+    python3Packages.evdev
     gtk3
     gobject-introspection
     gsettings-desktop-schemas
-    libcap  # For setcap
   ];
 
   # Set PYTHONPATH to find gobject-introspection
@@ -48,9 +48,11 @@ pkgs.mkShell {
       export PYTHONPATH=$PWD:$PYTHONPATH
     fi
 
-    # Set capabilities for Python to access input devices
-    if [ -f .venv/bin/python ]; then
-      sudo setcap "cap_sys_admin=ep" .venv/bin/python
+    # Add user to input group for evdev access
+    if ! groups | grep -q "input"; then
+      echo "Adding user to input group for keyboard access..."
+      sudo usermod -a -G input $USER
+      echo "Please log out and log back in for the group changes to take effect."
     fi
 
     echo "Development environment ready. You can run the application with: python -m blackbox_ai"
