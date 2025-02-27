@@ -16,82 +16,29 @@ A desktop AI assistant application for NixOS, inspired by the Mac Blackbox AI ap
 - NixOS
 - Python 3.8 or higher
 - GTK 3.0
-- Python packages (see requirements.txt)
 
 ## Installation
 
-1. First, ensure you have the required system dependencies. Add this to your NixOS configuration:
-
-```nix
-# configuration.nix
-{ config, pkgs, ... }:
-
-{
-  # Required system packages
-  environment.systemPackages = with pkgs; [
-    python3
-    python3Packages.pip
-    gtk3
-    gobject-introspection
-    python3Packages.pygobject3
-    python3Packages.pycairo
-    ninja
-    pkg-config
-    cairo
-    pango
-    glib
-  ];
-
-  # Make GTK and Python packages available system-wide
-  environment.variables = {
-    # Add GTK libraries to library path
-    LD_LIBRARY_PATH = lib.makeLibraryPath [
-      pkgs.gtk3
-      pkgs.gobject-introspection
-    ];
-    
-    # Make Python packages available
-    PYTHONPATH = lib.makeSearchPath "lib/python3.12/site-packages" [
-      pkgs.python3Packages.pygobject3
-      pkgs.python3Packages.pycairo
-    ];
-    
-    # Ensure GI typelibs are found
-    GI_TYPELIB_PATH = lib.makeSearchPath "lib/girepository-1.0" [
-      pkgs.gtk3.out
-      pkgs.pango.out
-      pkgs.gobject-introspection
-    ];
-  };
-}
+1. Clone the repository:
+```bash
+git clone https://github.com/rakshithskumar88/blackbox_ai_nix.git
+cd blackbox_ai_nix
 ```
 
-After updating configuration.nix, rebuild your system:
+2. Enter the development shell:
 ```bash
-sudo nixos-rebuild switch
-```
-
-2. Clone the repository:
-```bash
-git clone https://github.com/yourusername/blackbox-ai-nixos.git
-cd blackbox-ai-nixos
-```
-
-3. Enter the development shell:
-```bash
-# This will create a virtual environment and set up all required dependencies
+# This will set up a complete development environment with all dependencies
 nix-shell
 
-# The virtual environment will be automatically activated
-# GTK availability will be verified automatically
+# The shell automatically:
+# - Sets up Python with required packages (PyGObject, pycairo)
+# - Sets up all GTK dependencies and environment variables
+# - Verifies GTK availability
 ```
 
-4. Install the package:
+3. Install the package:
 ```bash
-# First upgrade pip to latest version
-pip install --upgrade pip
-
-# Install the package
+# Install in development mode
 pip install -e .
 ```
 
@@ -146,10 +93,9 @@ nix-shell
 ```
 
 This will:
-- Create a Python virtual environment with system packages access
-- Set up all required GTK environment variables
+- Set up Python with GTK bindings (PyGObject) and Cairo
+- Configure all required GTK environment variables
 - Verify GTK availability
-- Activate the virtual environment automatically
 
 2. Start developing:
 ```bash
@@ -176,17 +122,12 @@ blackbox-ai
    - Check if the hotkey is already in use by another application
 
 2. **GTK Errors**
-   - If you get "No module named 'gi'" error:
-     * Make sure you're using the provided development shell: `nix-shell`
-     * Verify your NixOS configuration has the correct environment variables set
-     * Try rebuilding your system: `sudo nixos-rebuild switch`
-   
-   - If you get "Namespace Gtk not available" error:
-     * Ensure you're using the development shell: `nix-shell`
-     * Verify the environment variables are loaded:
+   - If you get GTK-related errors:
+     * Make sure you're running the application from within the nix-shell
+     * Try exiting the shell completely and entering it again: `exit` then `nix-shell`
+     * Verify GTK is available in the shell:
        ```bash
-       echo $GI_TYPELIB_PATH  # Should show paths containing girepository-1.0
-       echo $LD_LIBRARY_PATH  # Should include GTK library paths
+       python -c "import gi; gi.require_version('Gtk', '3.0'); from gi.repository import Gtk"
        ```
 
 3. **Window Not Showing**
