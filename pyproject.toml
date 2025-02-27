@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "blackbox-ai"
+version = "0.1.0"
+description = "A desktop AI assistant application for NixOS"
+readme = "README.md"
+authors = [
+    { name = "BlackboxAI Team" }
+]
+license = { text = "MIT" }
+requires-python = ">=3.8"
+dependencies = [
+    "PyGObject>=3.42.0",
+    "keyboard>=0.13.5",
+    "aiohttp>=3.8.1",
+    "typing-extensions>=4.4.0",
+]
+
+[project.scripts]
+blackbox-ai = "blackbox_ai.main:main"
+
+[tool.setuptools]
+packages = ["blackbox_ai"]
