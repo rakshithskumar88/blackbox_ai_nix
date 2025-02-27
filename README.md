@@ -54,8 +54,9 @@ source venv/bin/activate
 # Verify GTK packages are available
 python -c "import gi" || echo "Error: GTK packages not found in PYTHONPATH"
 
-# If the above command shows an error, add system Python packages to PYTHONPATH:
-export PYTHONPATH="/usr/lib/python3/dist-packages:${PYTHONPATH}"
+# If the above command shows an error, add NixOS Python packages to PYTHONPATH:
+# Replace python3.10 with your Python version if different
+export PYTHONPATH="/run/current-system/sw/lib/python3.10/site-packages:${PYTHONPATH}"
 ```
 
 4. Install the package:
@@ -133,7 +134,7 @@ blackbox_ai/
    - Check if all required GTK dependencies are available
    - If you get "No module named 'gi'" error:
      * Make sure you created the virtual environment with `--system-site-packages`
-     * Try setting PYTHONPATH: `export PYTHONPATH="/usr/lib/python3/dist-packages:${PYTHONPATH}"`
+     * Try setting PYTHONPATH: `export PYTHONPATH="/run/current-system/sw/lib/python3.10/site-packages:${PYTHONPATH}"` (adjust Python version if needed)
      * As a last resort, install without virtual environment: `pip install --user -e .`
 
 3. **Window Not Showing**
