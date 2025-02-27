@@ -7,8 +7,8 @@ buildPythonApplication {
   src = ./.;
 
   nativeBuildInputs = with pkgs; [
-    wrapGAppsHook
     gobject-introspection
+    makeWrapper
   ];
 
   buildInputs = with pkgs; [
@@ -25,18 +25,32 @@ buildPythonApplication {
     pycairo
   ];
 
-  # Enable GDK pixbuf loaders
-  GDK_PIXBUF_MODULE_FILE = "${pkgs.librsvg}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache";
+  dontWrapGApps = true;
 
   preFixup = ''
-    gappsWrapperArgs+=(
+    makeWrapperArgs+=(
       --prefix GI_TYPELIB_PATH : "${pkgs.gtk3}/lib/girepository-1.0"
       --prefix GI_TYPELIB_PATH : "${pkgs.pango}/lib/girepository-1.0"
       --prefix GI_TYPELIB_PATH : "${pkgs.glib}/lib/girepository-1.0"
       --prefix GI_TYPELIB_PATH : "${pkgs.gobject-introspection}/lib/girepository-1.0"
       --prefix XDG_DATA_DIRS : "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}"
       --prefix XDG_DATA_DIRS : "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}"
+      --prefix GI_TYPELIB_PATH : "${pkgs.gobject-introspection}/lib/girepository-1.0"
+      --prefix LD_LIBRARY_PATH : "${pkgs.gtk3}/lib"
+      --prefix LD_LIBRARY_PATH : "${pkgs.pango}/lib"
+      --prefix LD_LIBRARY_PATH : "${pkgs.glib}/lib"
+      --prefix LD_LIBRARY_PATH : "${pkgs.cairo}/lib"
     )
+
+    # Wrap the executable
+    makeWrapper ${python.interpreter} $out/bin/blackbox-ai \
+      --add-flags "-m blackbox_ai" \
+      "''${makeWrapperArgs[@]}"
+  '';
+
+  postFixup = ''
+    # Ensure the Python package is properly wrapped
+    wrapPythonPrograms
   '';
 
   doCheck = false;  # Skip tests for now
