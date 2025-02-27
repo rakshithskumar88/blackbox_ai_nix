@@ -1,5 +1,15 @@
 { pkgs ? import <nixpkgs> {} }:
 
+let
+  # Create udev rules for input device access
+  inputRules = pkgs.writeTextFile {
+    name = "99-input-access.rules";
+    text = ''
+      KERNEL=="event*", SUBSYSTEM=="input", MODE="0660", GROUP="input"
+    '';
+    destination = "/etc/udev/rules.d/99-input-access.rules";
+  };
+in
 pkgs.mkShell {
   packages = with pkgs; [
     python3
@@ -48,9 +58,17 @@ pkgs.mkShell {
       export PYTHONPATH=$PWD:$PYTHONPATH
     fi
 
-    # Add user to input group for evdev access
+    # Set up udev rules for input device access
+    if [ ! -f "/etc/udev/rules.d/99-input-access.rules" ]; then
+      echo "Setting up udev rules for input device access..."
+      sudo cp ${inputRules} /etc/udev/rules.d/
+      sudo udevadm control --reload-rules
+      sudo udevadm trigger
+    fi
+
+    # Add current user to input group if not already a member
     if ! groups | grep -q "input"; then
-      echo "Adding user to input group for keyboard access..."
+      echo "Adding user to input group..."
       sudo usermod -a -G input $USER
       echo "Please log out and log back in for the group changes to take effect."
     fi
