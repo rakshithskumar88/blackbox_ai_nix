@@ -10,7 +10,8 @@ from pathlib import Path
 
 from ..config import (
     WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT,
-    WINDOW_OPACITY, STYLE_PATH
+    WINDOW_OPACITY, STYLE_PATH, TOOLBAR_BUTTONS,
+    INPUT_PLACEHOLDER, API_ENDPOINTS
 )
 from ..utils import log_exceptions, safe_gtk_call
 
@@ -47,7 +48,7 @@ class MainWindow(Gtk.Window):
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
-    def _create_button_with_icon(self, label, icon_name):
+    def _create_button_with_icon(self, label, icon_name, tooltip=None):
         """Create a button with both icon and label."""
         button = Gtk.Button()
         box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
@@ -61,6 +62,11 @@ class MainWindow(Gtk.Window):
         box.pack_start(label_widget, True, True, 0)
         
         button.add(box)
+        
+        # Add tooltip if provided
+        if tooltip:
+            button.set_tooltip_text(tooltip)
+            
         return button
 
     @log_exceptions
@@ -77,7 +83,7 @@ class MainWindow(Gtk.Window):
 
         # Add model selection combobox
         model_store = Gtk.ListStore(str)
-        models = ["DeepSeek-V3", "DeepSeek-R1", "Meta-Llama-3.3-70B", "Gemini-Flash-2.0", "GPT-4o", "Claude-Sonnet-3.7"]
+        models = list(API_ENDPOINTS.keys())
         for model in models:
             model_store.append([model])
         
@@ -86,22 +92,16 @@ class MainWindow(Gtk.Window):
         model_combo.pack_start(renderer_text, True)
         model_combo.add_attribute(renderer_text, "text", 0)
         model_combo.set_active(0)
+        model_combo.set_tooltip_text("Select AI model")
         toolbar_box.pack_start(model_combo, False, False, 6)
 
-        # Add toolbar buttons with icons
-        buttons = [
-            ("Web Search", "system-search"),
-            ("Deep Research", "edit-find"),
-            ("Models", "applications-science"),
-            ("Beast Mode", "weather-storm"),
-            ("Image", "image-x-generic"),
-            ("Upload", "document-send"),
-            ("Customize", "preferences-system"),
-            ("Multi-Panel", "view-grid")
-        ]
-        
-        for label, icon_name in buttons:
-            button = self._create_button_with_icon(label, icon_name)
+        # Add toolbar buttons with icons and tooltips
+        for button_config in TOOLBAR_BUTTONS:
+            button = self._create_button_with_icon(
+                button_config['label'],
+                button_config['icon'],
+                button_config['tooltip']
+            )
             toolbar_box.pack_start(button, False, False, 2)
 
         # Create chat display area
@@ -128,12 +128,16 @@ class MainWindow(Gtk.Window):
         
         # Create message entry
         self.message_entry = Gtk.Entry()
-        self.message_entry.set_placeholder_text("Message Blackbox or @mention agent")
+        self.message_entry.set_placeholder_text(INPUT_PLACEHOLDER)
         self.message_entry.connect("activate", self.on_send_clicked)
         input_box.pack_start(self.message_entry, True, True, 10)
         
         # Create send button with icon
-        send_button = self._create_button_with_icon("Send", "mail-send")
+        send_button = self._create_button_with_icon(
+            "Send",
+            "mail-send",
+            "Send message (Enter)"
+        )
         send_button.connect("clicked", self.on_send_clicked)
         input_box.pack_start(send_button, False, False, 10)
         
