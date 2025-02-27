@@ -4,6 +4,7 @@ pkgs.mkShell {
   packages = with pkgs; [
     python3
     python3Packages.pip
+    python3Packages.virtualenv
     python3Packages.pygobject3
     python3Packages.pycairo
     gtk3
@@ -33,9 +34,15 @@ pkgs.mkShell {
     echo "Testing GTK availability..."
     python -c "import gi; gi.require_version('Gtk', '3.0'); from gi.repository import Gtk" || echo "Warning: GTK not properly configured"
 
-    # Install the package in development mode
-    pip install -e .
+    # Create and activate virtual environment if it doesn't exist
+    if [ ! -d .venv ]; then
+      python -m venv .venv
+      source .venv/bin/activate
+      pip install -e .
+    else
+      source .venv/bin/activate
+    fi
 
-    echo "Development environment ready. You can run the application with: blackbox-ai"
+    echo "Development environment ready. You can run the application with: python -m blackbox_ai"
   '';
 }
