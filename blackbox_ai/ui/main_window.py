@@ -24,6 +24,20 @@ class MainWindow(Gtk.Window):
         self.set_keep_above(True)  # Keep window on top
         self.set_opacity(WINDOW_OPACITY)
         
+        # Set up header bar
+        header_bar = Gtk.HeaderBar()
+        header_bar.set_show_close_button(True)
+        header_bar.set_title("Ask Blackbox AI Anything")
+        header_bar.set_subtitle("Join +10M users & Fortune 500 companies using the Most Advanced Coding Agent on VSCode #1 on SWE Bench")
+        self.set_titlebar(header_bar)
+        
+        # Add VSCode button to header bar
+        vscode_button = Gtk.Button()
+        vscode_button.set_tooltip_text("Open in VSCode")
+        vscode_icon = Gtk.Image.new_from_icon_name("applications-development", Gtk.IconSize.LARGE_TOOLBAR)
+        vscode_button.add(vscode_icon)
+        header_bar.pack_end(vscode_button)
+        
         # Load CSS styling
         self._load_css()
         
@@ -112,7 +126,7 @@ class MainWindow(Gtk.Window):
 
         # Create text tags
         self.chat_buffer.create_tag("user-message", foreground="#007aff")
-        self.chat_buffer.create_tag("ai-message", foreground="#00ff00")
+        self.chat_buffer.create_tag("ai-message", foreground="#000000")
 
         # Add chat display to a scrolled window
         scrolled_window = Gtk.ScrolledWindow()
