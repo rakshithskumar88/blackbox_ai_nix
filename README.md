@@ -29,6 +29,8 @@ environment.systemPackages = with pkgs; [
   python3Packages.pip
   gtk3
   gobject-introspection
+  python3Packages.pygobject3
+  ninja  # Required for build
 ];
 ```
 
@@ -44,21 +46,25 @@ python -m venv venv
 source venv/bin/activate
 ```
 
-4. Install the required Python packages:
+4. Install the package in development mode:
 ```bash
-pip install -r requirements.txt
+pip install -e .
+```
+
+The application will be installed with all its dependencies. You can then run it using either:
+```bash
+# Using the installed console script
+blackbox-ai
+
+# Or using the module directly
+python -m blackbox_ai
 ```
 
 ## Usage
 
-1. Start the application:
-```bash
-python -m blackbox_ai
-```
+1. Use the global hotkey (Ctrl+Alt+B by default) to toggle the floating window.
 
-2. Use the global hotkey (Ctrl+Alt+B by default) to toggle the floating window.
-
-3. Type your questions or code in the input field and press Enter or click Send.
+2. Type your questions or code in the input field and press Enter or click Send.
 
 ## Configuration
 
