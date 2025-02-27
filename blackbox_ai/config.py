@@ -9,9 +9,10 @@ HOTKEY = "ctrl+alt+b"  # Default global hotkey to toggle the application
 
 # Window Configuration
 WINDOW_TITLE = "Ask Blackbox AI Anything"
-WINDOW_WIDTH = 900  # Match the Mac app width
-WINDOW_HEIGHT = 600  # Match the Mac app height
+WINDOW_WIDTH = 1024  # Match Mac app width
+WINDOW_HEIGHT = 768  # Match Mac app height
 WINDOW_OPACITY = 1.0  # Full opacity like Mac app
+WINDOW_SUBTITLE = "Join +10M users & Fortune 500 companies using the Most Advanced Coding Agent on VSCode #1 on SWE Bench"
 
 # UI Configuration
 STYLE_PATH = "style.css"
@@ -53,19 +54,22 @@ LOG_FILE = 'blackbox_ai.log'
 
 # Theme Configuration
 THEME = {
-    'background': '#1E1E1E',
-    'text': '#FFFFFF',
-    'input_background': '#2D2D2D',
-    'input_text': '#FFFFFF',
-    'user_message': '#007AFF',
-    'ai_message': '#00FF00',
-    'button_background': '#007AFF',
-    'button_text': '#FFFFFF',
-    'button_hover': '#0066CC',
-    'toolbar_background': '#2D2D2D',
-    'border': '#3C3C3C',
-    'scrollbar': 'rgba(100, 100, 100, 0.7)',
-    'scrollbar_hover': 'rgba(120, 120, 120, 0.8)'
+    'background': '#ffffff',
+    'text': '#000000',
+    'input_background': '#f5f5f5',
+    'input_text': '#000000',
+    'user_message': '#007aff',
+    'ai_message': '#000000',
+    'button_background': '#007aff',
+    'button_text': '#ffffff',
+    'button_hover': '#0066cc',
+    'toolbar_background': '#f5f5f5',
+    'border': '#e0e0e0',
+    'scrollbar': 'rgba(0, 0, 0, 0.2)',
+    'scrollbar_hover': 'rgba(0, 0, 0, 0.3)',
+    'header_background': 'linear-gradient(to bottom, #ffffff, #f5f5f5)',
+    'header_text': '#000000',
+    'header_subtitle': '#666666'
 }
 
 # Feature Flags
@@ -89,44 +93,77 @@ TOOLBAR_BUTTONS = [
     {
         'label': 'Web Search',
         'icon': 'system-search',
-        'tooltip': 'Search the web for information'
+        'tooltip': 'Search the web for information',
+        'shortcut': 'Ctrl+F'
     },
     {
         'label': 'Deep Research',
         'icon': 'edit-find',
-        'tooltip': 'Perform in-depth research'
+        'tooltip': 'Perform in-depth research',
+        'shortcut': 'Ctrl+R'
     },
     {
         'label': 'Models',
         'icon': 'applications-science',
-        'tooltip': 'Select AI model'
+        'tooltip': 'Select AI model',
+        'shortcut': 'Ctrl+M'
     },
     {
         'label': 'Beast Mode',
         'icon': 'weather-storm',
-        'tooltip': 'Enable advanced features'
+        'tooltip': 'Enable advanced features',
+        'shortcut': 'Ctrl+B'
     },
     {
         'label': 'Image',
         'icon': 'image-x-generic',
-        'tooltip': 'Generate or analyze images'
+        'tooltip': 'Generate or analyze images',
+        'shortcut': 'Ctrl+I'
     },
     {
         'label': 'Upload',
         'icon': 'document-send',
-        'tooltip': 'Upload files for analysis'
+        'tooltip': 'Upload files for analysis',
+        'shortcut': 'Ctrl+U'
     },
     {
         'label': 'Customize',
         'icon': 'preferences-system',
-        'tooltip': 'Customize settings'
+        'tooltip': 'Customize settings',
+        'shortcut': 'Ctrl+,'
     },
     {
         'label': 'Multi-Panel',
         'icon': 'view-grid',
-        'tooltip': 'Open multiple chat panels'
+        'tooltip': 'Open multiple chat panels',
+        'shortcut': 'Ctrl+T'
     }
 ]
 
 # Input Configuration
 INPUT_PLACEHOLDER = "Message Blackbox or @mention agent"
+
+# Window Shadow
+WINDOW_SHADOW = {
+    'enabled': True,
+    'radius': 20,
+    'opacity': 0.15,
+    'offset_x': 0,
+    'offset_y': 2
+}
+
+# Animation Settings
+ANIMATIONS = {
+    'enabled': True,
+    'duration': 200,  # milliseconds
+    'easing': 'ease-out'
+}
+
+# Keyboard Shortcuts
+SHORTCUTS = {
+    'toggle_window': 'Ctrl+Alt+B',
+    'send_message': 'Enter',
+    'clear_chat': 'Ctrl+L',
+    'new_chat': 'Ctrl+N',
+    'close_window': 'Escape'
+}
