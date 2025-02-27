@@ -5,14 +5,9 @@ setup(
     version="0.1.0",
     packages=find_packages(),
     include_package_data=True,
-    package_data={
-        'blackbox_ai': ['ui/*.css'],
-    },
     install_requires=[
         "PyGObject>=3.42.0",
-        "keyboard>=0.13.5",
-        "aiohttp>=3.8.1",
-        "typing-extensions>=4.4.0",
+        "pycairo>=1.20.0",
     ],
     entry_points={
         'console_scripts': [
