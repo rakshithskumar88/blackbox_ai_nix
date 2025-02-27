@@ -6,7 +6,7 @@ import logging
 import sys
 from functools import wraps
 from typing import Callable, Any
-from config import LOG_LEVEL, LOG_FORMAT
+from .config import LOG_LEVEL, LOG_FORMAT
 
 def setup_logging() -> None:
     """
