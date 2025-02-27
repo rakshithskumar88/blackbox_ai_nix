@@ -15,6 +15,7 @@ textview {
 
 textview text {
     background-color: transparent;
+    color: #ffffff;
 }
 
 /* Message input area */
@@ -31,7 +32,7 @@ entry {
 
 /* Send button */
 button {
-    background-color: #007aff;
+    background: linear-gradient(to bottom, #0066cc, #0052a3);
     color: #ffffff;
     border: none;
     border-radius: 4px;
@@ -39,17 +40,37 @@ button {
     margin: 10px;
     font-family: 'Ubuntu', sans-serif;
     font-size: 14px;
+    min-width: 80px;
 }
 
 button:hover {
-    background-color: #0066cc;
+    background: linear-gradient(to bottom, #0052a3, #003d7a);
+}
+
+button label {
+    color: #ffffff;
 }
 
 /* Model selection area */
-box.model-selection {
+combobox {
     background-color: rgba(45, 45, 45, 0.95);
-    padding: 10px;
-    border-bottom: 1px solid rgba(60, 60, 60, 0.95);
+    color: #ffffff;
+    border: 1px solid rgba(60, 60, 60, 0.95);
+    border-radius: 4px;
+    padding: 4px;
+    margin: 5px;
+}
+
+combobox button {
+    background-color: transparent;
+    color: #ffffff;
+    border: none;
+    margin: 0;
+    padding: 4px;
+}
+
+combobox button:hover {
+    background-color: rgba(60, 60, 60, 0.95);
 }
 
 /* Toolbar area */
@@ -57,6 +78,22 @@ box.toolbar {
     background-color: rgba(45, 45, 45, 0.95);
     padding: 5px;
     border-bottom: 1px solid rgba(60, 60, 60, 0.95);
+}
+
+/* Toolbar buttons */
+box.toolbar button {
+    background-color: rgba(60, 60, 60, 0.95);
+    color: #ffffff;
+    border: 1px solid rgba(80, 80, 80, 0.95);
+    border-radius: 4px;
+    padding: 6px 12px;
+    margin: 2px;
+    font-size: 12px;
+    min-width: 100px;
+}
+
+box.toolbar button:hover {
+    background-color: rgba(80, 80, 80, 0.95);
 }
 
 /* Message styling */
@@ -95,4 +132,31 @@ scrollbar slider {
 
 scrollbar slider:hover {
     background-color: rgba(120, 120, 120, 0.8);
+}
+
+/* Dropdown menu styling */
+menu {
+    background-color: rgba(45, 45, 45, 0.95);
+    border: 1px solid rgba(60, 60, 60, 0.95);
+    border-radius: 4px;
+    padding: 4px;
+}
+
+menuitem {
+    color: #ffffff;
+    padding: 6px 12px;
+}
+
+menuitem:hover {
+    background-color: rgba(60, 60, 60, 0.95);
+}
+
+/* Tooltips */
+tooltip {
+    background-color: rgba(45, 45, 45, 0.95);
+    color: #ffffff;
+    border: 1px solid rgba(60, 60, 60, 0.95);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
 }

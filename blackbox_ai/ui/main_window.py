@@ -47,6 +47,22 @@ class MainWindow(Gtk.Window):
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
+    def _create_button_with_icon(self, label, icon_name):
+        """Create a button with both icon and label."""
+        button = Gtk.Button()
+        box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        
+        # Create icon
+        icon = Gtk.Image.new_from_icon_name(icon_name, Gtk.IconSize.SMALL_TOOLBAR)
+        box.pack_start(icon, False, False, 0)
+        
+        # Create label
+        label_widget = Gtk.Label(label=label)
+        box.pack_start(label_widget, True, True, 0)
+        
+        button.add(box)
+        return button
+
     @log_exceptions
     def _setup_ui(self):
         """Set up the user interface components."""
@@ -72,10 +88,20 @@ class MainWindow(Gtk.Window):
         model_combo.set_active(0)
         toolbar_box.pack_start(model_combo, False, False, 6)
 
-        # Add toolbar buttons
-        button_labels = ["Web Search", "Deep Research", "Models", "Beast Mode", "Image", "Upload", "Customize", "Multi-Panel"]
-        for label in button_labels:
-            button = Gtk.Button.new_with_label(label)
+        # Add toolbar buttons with icons
+        buttons = [
+            ("Web Search", "system-search"),
+            ("Deep Research", "edit-find"),
+            ("Models", "applications-science"),
+            ("Beast Mode", "weather-storm"),
+            ("Image", "image-x-generic"),
+            ("Upload", "document-send"),
+            ("Customize", "preferences-system"),
+            ("Multi-Panel", "view-grid")
+        ]
+        
+        for label, icon_name in buttons:
+            button = self._create_button_with_icon(label, icon_name)
             toolbar_box.pack_start(button, False, False, 2)
 
         # Create chat display area
@@ -106,8 +132,8 @@ class MainWindow(Gtk.Window):
         self.message_entry.connect("activate", self.on_send_clicked)
         input_box.pack_start(self.message_entry, True, True, 10)
         
-        # Create send button
-        send_button = Gtk.Button.new_with_label("Send")
+        # Create send button with icon
+        send_button = self._create_button_with_icon("Send", "mail-send")
         send_button.connect("clicked", self.on_send_clicked)
         input_box.pack_start(send_button, False, False, 10)
         
