@@ -50,7 +50,7 @@ pkgs.mkShell {
 
     # Set capabilities for Python to access input devices
     if [ -f .venv/bin/python ]; then
-      sudo setcap cap_input=eip .venv/bin/python
+      sudo setcap "cap_sys_admin=ep" .venv/bin/python
     fi
 
     echo "Development environment ready. You can run the application with: python -m blackbox_ai"
