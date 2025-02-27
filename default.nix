@@ -6,17 +6,13 @@ buildPythonApplication {
   version = "0.1.0";
   src = ./.;
 
-  nativeBuildInputs = with pkgs; [
-    gobject-introspection
-    makeWrapper
-  ];
-
   buildInputs = with pkgs; [
+    python3
+    python3Packages.pip
+    python3Packages.pygobject3
+    python3Packages.pycairo
     gtk3
     gobject-introspection
-    cairo
-    pango
-    glib
     gsettings-desktop-schemas
   ];
 
@@ -25,35 +21,13 @@ buildPythonApplication {
     pycairo
   ];
 
-  dontWrapGApps = true;
+  makeWrapperArgs = with pkgs; [
+    "--prefix GI_TYPELIB_PATH : ${gtk3}/lib/girepository-1.0:${pango}/lib/girepository-1.0:${glib}/lib/girepository-1.0:${gobject-introspection}/lib/girepository-1.0"
+    "--prefix LD_LIBRARY_PATH : ${gtk3}/lib:${pango}/lib:${glib}/lib:${cairo}/lib"
+    "--prefix XDG_DATA_DIRS : ${gsettings-desktop-schemas}/share/gsettings-schemas/${gsettings-desktop-schemas.name}:${gtk3}/share/gsettings-schemas/${gtk3.name}"
+  ];
 
-  preFixup = ''
-    makeWrapperArgs+=(
-      --prefix GI_TYPELIB_PATH : "${pkgs.gtk3}/lib/girepository-1.0"
-      --prefix GI_TYPELIB_PATH : "${pkgs.pango}/lib/girepository-1.0"
-      --prefix GI_TYPELIB_PATH : "${pkgs.glib}/lib/girepository-1.0"
-      --prefix GI_TYPELIB_PATH : "${pkgs.gobject-introspection}/lib/girepository-1.0"
-      --prefix XDG_DATA_DIRS : "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}"
-      --prefix XDG_DATA_DIRS : "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}"
-      --prefix GI_TYPELIB_PATH : "${pkgs.gobject-introspection}/lib/girepository-1.0"
-      --prefix LD_LIBRARY_PATH : "${pkgs.gtk3}/lib"
-      --prefix LD_LIBRARY_PATH : "${pkgs.pango}/lib"
-      --prefix LD_LIBRARY_PATH : "${pkgs.glib}/lib"
-      --prefix LD_LIBRARY_PATH : "${pkgs.cairo}/lib"
-    )
-
-    # Wrap the executable
-    makeWrapper ${python.interpreter} $out/bin/blackbox-ai \
-      --add-flags "-m blackbox_ai" \
-      "''${makeWrapperArgs[@]}"
-  '';
-
-  postFixup = ''
-    # Ensure the Python package is properly wrapped
-    wrapPythonPrograms
-  '';
-
-  doCheck = false;  # Skip tests for now
+  doCheck = false;
 
   meta = with pkgs.lib; {
     description = "A desktop AI assistant application for NixOS";
