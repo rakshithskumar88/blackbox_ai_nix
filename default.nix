@@ -29,35 +29,24 @@ pkgs.stdenv.mkDerivation {
     glib
     glib.dev
     gsettings-desktop-schemas
-    ninja
     librsvg
   ];
 
-  dontWrapGApps = true;
-
-  preFixup = ''
-    makeWrapperArgs+=(
-      "''${gappsWrapperArgs[@]}"
-      --prefix GI_TYPELIB_PATH : "${pkgs.gtk3}/lib/girepository-1.0"
-      --prefix GI_TYPELIB_PATH : "${pkgs.pango}/lib/girepository-1.0"
-      --prefix GI_TYPELIB_PATH : "${pkgs.glib}/lib/girepository-1.0"
-      --prefix GI_TYPELIB_PATH : "${pkgs.gobject-introspection}/lib/girepository-1.0"
-      --prefix XDG_DATA_DIRS : "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}"
-      --prefix XDG_DATA_DIRS : "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}"
-      --prefix PYTHONPATH : "$out/${pythonEnv.sitePackages}"
-    )
-  '';
+  dontBuild = true;  # Skip build phase
+  dontConfigure = true;  # Skip configure phase
 
   installPhase = ''
     runHook preInstall
 
-    mkdir -p $out/bin
     mkdir -p $out/${pythonEnv.sitePackages}
-    cp -r . $out/${pythonEnv.sitePackages}/blackbox_ai
+    cp -r blackbox_ai $out/${pythonEnv.sitePackages}/
 
+    mkdir -p $out/bin
     makeWrapper ${pythonEnv}/bin/python $out/bin/blackbox-ai \
-      --add-flags "-m blackbox_ai" \
-      "''${makeWrapperArgs[@]}"
+      --set GI_TYPELIB_PATH "${pkgs.gtk3}/lib/girepository-1.0:${pkgs.pango}/lib/girepository-1.0:${pkgs.glib}/lib/girepository-1.0:${pkgs.gobject-introspection}/lib/girepository-1.0" \
+      --set XDG_DATA_DIRS "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}" \
+      --prefix PYTHONPATH : "$out/${pythonEnv.sitePackages}" \
+      --add-flags "-m blackbox_ai"
 
     runHook postInstall
   '';
