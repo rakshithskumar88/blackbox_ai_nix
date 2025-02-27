@@ -10,6 +10,7 @@ pkgs.mkShell {
     gtk3
     gobject-introspection
     gsettings-desktop-schemas
+    libcap  # For setcap
   ];
 
   # Set PYTHONPATH to find gobject-introspection
@@ -45,6 +46,11 @@ pkgs.mkShell {
       source .venv/bin/activate
       # Add the current directory to PYTHONPATH
       export PYTHONPATH=$PWD:$PYTHONPATH
+    fi
+
+    # Set capabilities for Python to access input devices
+    if [ -f .venv/bin/python ]; then
+      sudo setcap cap_input=eip .venv/bin/python
     fi
 
     echo "Development environment ready. You can run the application with: python -m blackbox_ai"

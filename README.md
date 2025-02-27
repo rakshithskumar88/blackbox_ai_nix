@@ -19,8 +19,6 @@ A desktop AI assistant application for NixOS, inspired by the Mac Blackbox AI ap
 
 ## Installation
 
-### Development Installation
-
 1. Clone the repository:
 ```bash
 git clone https://github.com/rakshithskumar88/blackbox_ai_nix.git
@@ -30,38 +28,22 @@ cd blackbox_ai_nix
 2. Enter the development shell:
 ```bash
 # This will set up a complete development environment with all dependencies
-nix-shell
+sudo nix-shell  # sudo is required for keyboard input permissions
+
+# The shell automatically:
+# - Creates a Python virtual environment with required packages
+# - Sets up all GTK dependencies and environment variables
+# - Configures keyboard input permissions
+# - Activates the virtual environment
+# - Verifies GTK availability
 ```
 
 3. Run the application:
 ```bash
-blackbox-ai
+python -m blackbox_ai
 ```
 
-### System Installation
-
-To install the application system-wide:
-
-```bash
-# Build and install using Nix
-nix-env -f default.nix -i
-```
-
-Or add it to your NixOS configuration:
-
-```nix
-# configuration.nix
-{
-  environment.systemPackages = [
-    (pkgs.callPackage /path/to/blackbox_ai_nix/default.nix {})
-  ];
-}
-```
-
-Then rebuild your system:
-```bash
-sudo nixos-rebuild switch
-```
+Note: The application requires root permissions (or appropriate capabilities) to capture global keyboard shortcuts. This is handled automatically by the development shell.
 
 ## Usage
 
@@ -97,24 +79,19 @@ blackbox_ai/
 
 ### Development Environment
 
-The project uses Nix for reproducible builds and development environments:
+The project includes a `shell.nix` file that sets up a complete development environment with all required dependencies. To use it:
 
-- `default.nix`: Defines the application build
-- `shell.nix`: Provides a development environment
-
-The development shell automatically:
-- Sets up Python with GTK bindings
-- Configures all required GTK environment variables
-- Makes the application available in PATH
-
-### Building
-
-To build the application:
+1. Enter the development shell:
 ```bash
-nix-build
+sudo nix-shell  # sudo required for keyboard input permissions
 ```
 
-This will create a `result` symlink pointing to the built package.
+This will:
+- Create a Python virtual environment with system packages access
+- Set up all required GTK environment variables
+- Configure keyboard input permissions
+- Verify GTK availability
+- Activate the virtual environment automatically
 
 ### Running Tests
 
@@ -127,22 +104,15 @@ This will create a `result` symlink pointing to the built package.
 ### Common Issues
 
 1. **Global Hotkey Not Working**
-   - Ensure you have the necessary permissions
-   - Try running with sudo (not recommended for regular use)
+   - Make sure you're running the application with sudo or appropriate capabilities
    - Check if the hotkey is already in use by another application
 
 2. **GTK Errors**
    - Make sure you're running the application from within the nix-shell
-   - Try rebuilding the development environment:
+   - Try exiting the shell completely and entering it again: `exit` then `sudo nix-shell`
+   - Verify GTK is available in the shell:
      ```bash
-     # Exit current shell if any
-     exit
-     
-     # Remove result if it exists
-     rm -f result
-     
-     # Enter shell again
-     nix-shell
+     python -c "import gi; gi.require_version('Gtk', '3.0'); from gi.repository import Gtk"
      ```
 
 3. **Window Not Showing**
