@@ -1,0 +1,82 @@
+/* Main window styling */
+window {
+    background-color: #2d2d2d;
+    border-radius: 8px;
+    border: 1px solid #3d3d3d;
+}
+
+/* Chat display area */
+textview {
+    font-family: "Ubuntu", sans-serif;
+    font-size: 14px;
+    color: #e0e0e0;
+    background-color: #2d2d2d;
+    padding: 10px;
+}
+
+textview text {
+    background-color: transparent;
+    color: #e0e0e0;
+}
+
+/* Scrolled window for chat display */
+scrolledwindow {
+    border: none;
+    background-color: #2d2d2d;
+}
+
+/* Input field styling */
+entry {
+    background-color: #3d3d3d;
+    color: #e0e0e0;
+    border: 1px solid #4d4d4d;
+    border-radius: 4px;
+    padding: 8px;
+    margin: 10px;
+    font-family: "Ubuntu", sans-serif;
+    font-size: 14px;
+}
+
+entry:focus {
+    border-color: #5294e2;
+}
+
+/* Submit button styling */
+button {
+    background-color: #5294e2;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    margin: 10px;
+    font-family: "Ubuntu", sans-serif;
+    font-size: 14px;
+    transition: background-color 200ms ease;
+}
+
+button:hover {
+    background-color: #62a4f2;
+}
+
+button:active {
+    background-color: #4284d2;
+}
+
+/* Box containers */
+box {
+    padding: 10px;
+}
+
+/* Message styling */
+.user-message {
+    color: #e0e0e0;
+}
+
+.ai-message {
+    color: #5294e2;
+}
+
+/* Error message styling */
+.error-message {
+    color: #ff6b6b;
+}

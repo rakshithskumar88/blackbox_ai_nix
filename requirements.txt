@@ -1,0 +1,11 @@
+# GUI Dependencies
+PyGObject>=3.42.0  # GTK bindings for Python
+
+# Hotkey Support
+keyboard>=0.13.5   # For global hotkey detection
+
+# Async Support
+aiohttp>=3.8.1    # For async HTTP requests (future API integration)
+
+# Type Hints
+typing-extensions>=4.4.0
