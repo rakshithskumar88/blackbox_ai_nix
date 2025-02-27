@@ -20,23 +20,37 @@ A desktop AI assistant application for NixOS, inspired by the Mac Blackbox AI ap
 
 ## Installation
 
-1. First, ensure you have the required system dependencies:
+1. First, ensure you have the required system dependencies. Add this to your NixOS configuration:
 
 ```nix
 # configuration.nix
-environment.systemPackages = with pkgs; [
-  python3
-  python3Packages.pip
-  gtk3
-  gobject-introspection
-  python3Packages.pygobject3
-  ninja  # Required for build
-  pkg-config  # Required for build
-  cairo  # Required for GTK
-  pango  # Required for GTK
-  glib  # Required for GTK
-  python3Packages.pycairo  # Required for GTK
-];
+{ config, pkgs, ... }:
+
+{
+  environment.systemPackages = with pkgs; [
+    python3
+    python3Packages.pip
+    gtk3
+    gobject-introspection
+    python3Packages.pygobject3
+    python3Packages.pycairo
+    ninja
+    pkg-config
+    cairo
+    pango
+    glib
+  ];
+
+  # Make Python packages available in PATH
+  environment.variables = {
+    PYTHONPATH = "${pkgs.python3Packages.pygobject3}/lib/python3.10/site-packages:${pkgs.python3Packages.pycairo}/lib/python3.10/site-packages";
+  };
+}
+```
+
+After updating configuration.nix, rebuild your system:
+```bash
+sudo nixos-rebuild switch
 ```
 
 2. Clone the repository:
@@ -54,9 +68,13 @@ source venv/bin/activate
 # Verify GTK packages are available
 python -c "import gi" || echo "Error: GTK packages not found in PYTHONPATH"
 
-# If the above command shows an error, add NixOS Python packages to PYTHONPATH:
-# Replace python3.10 with your Python version if different
-export PYTHONPATH="/run/current-system/sw/lib/python3.10/site-packages:${PYTHONPATH}"
+# If the above command shows an error, try this NixOS-specific approach:
+nix-shell -p python3Packages.pygobject3 python3Packages.pycairo --run "python -c 'import gi'"
+
+# If that works, you can set up the environment permanently:
+PYGI_PATH=$(nix-build --no-out-link '<nixpkgs>' -A python3Packages.pygobject3)
+PYCAIRO_PATH=$(nix-build --no-out-link '<nixpkgs>' -A python3Packages.pycairo)
+export PYTHONPATH="${PYGI_PATH}/lib/python3.10/site-packages:${PYCAIRO_PATH}/lib/python3.10/site-packages:${PYTHONPATH}"
 ```
 
 4. Install the package:
@@ -134,7 +152,13 @@ blackbox_ai/
    - Check if all required GTK dependencies are available
    - If you get "No module named 'gi'" error:
      * Make sure you created the virtual environment with `--system-site-packages`
-     * Try setting PYTHONPATH: `export PYTHONPATH="/run/current-system/sw/lib/python3.10/site-packages:${PYTHONPATH}"` (adjust Python version if needed)
+     * Try using nix-shell: `nix-shell -p python3Packages.pygobject3 python3Packages.pycairo --run "python -c 'import gi'"`
+     * Or set PYTHONPATH using nix-build:
+       ```bash
+       PYGI_PATH=$(nix-build --no-out-link '<nixpkgs>' -A python3Packages.pygobject3)
+       PYCAIRO_PATH=$(nix-build --no-out-link '<nixpkgs>' -A python3Packages.pycairo)
+       export PYTHONPATH="${PYGI_PATH}/lib/python3.10/site-packages:${PYCAIRO_PATH}/lib/python3.10/site-packages:${PYTHONPATH}"
+       ```
      * As a last resort, install without virtual environment: `pip install --user -e .`
 
 3. **Window Not Showing**
