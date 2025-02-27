@@ -18,11 +18,7 @@ dependencies = [
     "typing-extensions>=4.4.0",
 ]
 
-[project.optional-dependencies]
-gtk = [
-    "PyGObject>=3.42.0",
-    "pycairo>=1.20.0",
-]
+# GTK dependencies are provided by the system packages
 
 [project.scripts]
 blackbox-ai = "blackbox_ai.main:main"

@@ -51,23 +51,12 @@ python -m venv venv
 source venv/bin/activate
 ```
 
-4. Install the required system packages for GTK support:
-```bash
-# For NixOS, these should already be available from step 1
-sudo nixos-rebuild switch
-```
-
-5. Install the package in development mode:
+4. Install the package:
 ```bash
 # First upgrade pip to latest version
 pip install --upgrade pip
 
-# Install the package with GTK support
-pip install -e ".[gtk]"
-```
-
-The application will be installed with all its dependencies. If you encounter any GTK-related installation issues, you can install the base package without GTK dependencies and rely on system-provided GTK packages:
-```bash
+# Install the package
 pip install -e .
 ```
 
