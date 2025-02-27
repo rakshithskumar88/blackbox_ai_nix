@@ -1,82 +1,98 @@
 /* Main window styling */
 window {
-    background-color: #2d2d2d;
+    background-color: rgba(30, 30, 30, 0.95);
     border-radius: 8px;
-    border: 1px solid #3d3d3d;
 }
 
 /* Chat display area */
 textview {
-    font-family: "Ubuntu", sans-serif;
+    background-color: rgba(30, 30, 30, 0.95);
+    color: #ffffff;
+    font-family: 'Ubuntu', sans-serif;
     font-size: 14px;
-    color: #e0e0e0;
-    background-color: #2d2d2d;
     padding: 10px;
 }
 
 textview text {
     background-color: transparent;
-    color: #e0e0e0;
 }
 
-/* Scrolled window for chat display */
-scrolledwindow {
-    border: none;
-    background-color: #2d2d2d;
-}
-
-/* Input field styling */
+/* Message input area */
 entry {
-    background-color: #3d3d3d;
-    color: #e0e0e0;
-    border: 1px solid #4d4d4d;
+    background-color: rgba(45, 45, 45, 0.95);
+    color: #ffffff;
+    border: 1px solid rgba(60, 60, 60, 0.95);
     border-radius: 4px;
     padding: 8px;
     margin: 10px;
-    font-family: "Ubuntu", sans-serif;
+    font-family: 'Ubuntu', sans-serif;
     font-size: 14px;
 }
 
-entry:focus {
-    border-color: #5294e2;
-}
-
-/* Submit button styling */
+/* Send button */
 button {
-    background-color: #5294e2;
-    color: white;
+    background-color: #007aff;
+    color: #ffffff;
     border: none;
     border-radius: 4px;
-    padding: 8px 16px;
+    padding: 8px 15px;
     margin: 10px;
-    font-family: "Ubuntu", sans-serif;
+    font-family: 'Ubuntu', sans-serif;
     font-size: 14px;
-    transition: background-color 200ms ease;
 }
 
 button:hover {
-    background-color: #62a4f2;
+    background-color: #0066cc;
 }
 
-button:active {
-    background-color: #4284d2;
-}
-
-/* Box containers */
-box {
+/* Model selection area */
+box.model-selection {
+    background-color: rgba(45, 45, 45, 0.95);
     padding: 10px;
+    border-bottom: 1px solid rgba(60, 60, 60, 0.95);
+}
+
+/* Toolbar area */
+box.toolbar {
+    background-color: rgba(45, 45, 45, 0.95);
+    padding: 5px;
+    border-bottom: 1px solid rgba(60, 60, 60, 0.95);
 }
 
 /* Message styling */
 .user-message {
-    color: #e0e0e0;
+    color: #007aff;
+    font-weight: bold;
 }
 
 .ai-message {
-    color: #5294e2;
+    color: #00ff00;
 }
 
-/* Error message styling */
-.error-message {
-    color: #ff6b6b;
+/* Scrollbar styling */
+scrolledwindow {
+    border: none;
+}
+
+scrolledwindow undershoot {
+    background: none;
+}
+
+scrolledwindow overshoot {
+    background: none;
+}
+
+scrollbar {
+    background-color: transparent;
+    border: none;
+}
+
+scrollbar slider {
+    background-color: rgba(100, 100, 100, 0.7);
+    border-radius: 4px;
+    min-width: 6px;
+}
+
+scrollbar slider:hover {
+    background-color: rgba(120, 120, 120, 0.8);
 }

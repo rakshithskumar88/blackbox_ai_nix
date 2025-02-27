@@ -51,8 +51,32 @@ class MainWindow(Gtk.Window):
     def _setup_ui(self):
         """Set up the user interface components."""
         # Create main vertical box
-        main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
         self.add(main_box)
+
+        # Create toolbar
+        toolbar_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        toolbar_box.get_style_context().add_class("toolbar")
+        main_box.pack_start(toolbar_box, False, False, 0)
+
+        # Add model selection combobox
+        model_store = Gtk.ListStore(str)
+        models = ["DeepSeek-V3", "DeepSeek-R1", "Meta-Llama-3.3-70B", "Gemini-Flash-2.0", "GPT-4o", "Claude-Sonnet-3.7"]
+        for model in models:
+            model_store.append([model])
+        
+        model_combo = Gtk.ComboBox.new_with_model(model_store)
+        renderer_text = Gtk.CellRendererText()
+        model_combo.pack_start(renderer_text, True)
+        model_combo.add_attribute(renderer_text, "text", 0)
+        model_combo.set_active(0)
+        toolbar_box.pack_start(model_combo, False, False, 6)
+
+        # Add toolbar buttons
+        button_labels = ["Web Search", "Deep Research", "Models", "Beast Mode", "Image", "Upload", "Customize", "Multi-Panel"]
+        for label in button_labels:
+            button = Gtk.Button.new_with_label(label)
+            toolbar_box.pack_start(button, False, False, 2)
 
         # Create chat display area
         self.chat_display = Gtk.TextView()
@@ -61,8 +85,8 @@ class MainWindow(Gtk.Window):
         self.chat_buffer = self.chat_display.get_buffer()
 
         # Create text tags
-        self.chat_buffer.create_tag("user-message", foreground="blue")
-        self.chat_buffer.create_tag("ai-message", foreground="green")
+        self.chat_buffer.create_tag("user-message", foreground="#007aff")
+        self.chat_buffer.create_tag("ai-message", foreground="#00ff00")
 
         # Add chat display to a scrolled window
         scrolled_window = Gtk.ScrolledWindow()
@@ -78,16 +102,16 @@ class MainWindow(Gtk.Window):
         
         # Create message entry
         self.message_entry = Gtk.Entry()
-        self.message_entry.set_placeholder_text("Type your message here...")
+        self.message_entry.set_placeholder_text("Message Blackbox or @mention agent")
         self.message_entry.connect("activate", self.on_send_clicked)
-        input_box.pack_start(self.message_entry, True, True, 0)
+        input_box.pack_start(self.message_entry, True, True, 10)
         
         # Create send button
         send_button = Gtk.Button.new_with_label("Send")
         send_button.connect("clicked", self.on_send_clicked)
-        input_box.pack_start(send_button, False, False, 0)
+        input_box.pack_start(send_button, False, False, 10)
         
-        main_box.pack_start(input_box, False, False, 0)
+        main_box.pack_start(input_box, False, False, 10)
 
     @safe_gtk_call
     def append_message(self, message: str, is_user: bool = True):

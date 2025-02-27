@@ -2,107 +2,116 @@
 Main entry point for the BlackboxAI application.
 """
 
-import gi
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, GLib
+import asyncio
 import logging
 import signal
 import sys
+from gi.repository import GLib
 
 from .ui.main_window import MainWindow
 from .hotkey_listener import HotkeyListener
 from .chat_service import ChatService
-from .utils import setup_logging, log_exceptions
+from .utils import setup_logging
 
 logger = logging.getLogger(__name__)
 
 class BlackboxAI:
+    """
+    Main application class for BlackboxAI.
+    """
     def __init__(self):
-        """Initialize the BlackboxAI application."""
-        # Set up logging
-        setup_logging()
-        logger.info("Starting BlackboxAI application")
-
-        # Initialize components
         self.window = None
         self.hotkey_listener = None
         self.chat_service = None
+        self.loop = None
 
-    @log_exceptions
-    def initialize(self):
-        """Initialize all components of the application."""
+    async def initialize(self):
+        """Initialize the application."""
         try:
-            # Initialize the main window
-            self.window = MainWindow()
-            
-            # Initialize the chat service
+            # Set up logging
+            setup_logging()
+            logger.info("Starting BlackboxAI application")
+
+            # Initialize chat service
             self.chat_service = ChatService()
-            
-            # Initialize and start the hotkey listener
-            self.hotkey_listener = HotkeyListener(self.toggle_window)
+            await self.chat_service.initialize()
+
+            # Create main window
+            self.window = MainWindow()
+            self.window.connect("destroy", self.cleanup)
+
+            # Set up message processing
+            def process_message_callback(message):
+                asyncio.create_task(self._process_message(message))
+
+            self.window._process_message = process_message_callback
+
+            # Initialize hotkey listener
+            self.hotkey_listener = HotkeyListener(self.window.toggle_visibility)
             self.hotkey_listener.start()
 
-            # Set up signal handlers for graceful shutdown
-            GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, self.quit)
-            GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGTERM, self.quit)
-
             logger.info("BlackboxAI initialization complete")
-            return True
 
         except Exception as e:
             logger.error(f"Failed to initialize BlackboxAI: {str(e)}")
-            return False
+            await self.cleanup()
+            sys.exit(1)
 
-    @log_exceptions
-    def toggle_window(self):
-        """Toggle the main window visibility."""
-        if self.window:
-            GLib.idle_add(self.window.toggle_visibility)
-
-    @log_exceptions
-    def run(self):
-        """Run the application."""
+    async def _process_message(self, message: str):
+        """Process a message through the chat service."""
         try:
-            if not self.initialize():
-                logger.error("Failed to initialize. Exiting.")
-                return 1
-
-            # Show the main window
-            self.window.show_all()
+            response = await self.chat_service.process_message(message)
             
-            # Start the GTK main loop
-            Gtk.main()
-            return 0
+            # Schedule UI update in main thread
+            GLib.idle_add(
+                self.window.append_message,
+                response,
+                False  # is_user=False for AI responses
+            )
 
         except Exception as e:
-            logger.error(f"Error running BlackboxAI: {str(e)}")
-            return 1
+            logger.error(f"Error processing message: {str(e)}")
+            GLib.idle_add(
+                self.window.append_message,
+                f"Error: {str(e)}",
+                False
+            )
 
-        finally:
-            self.cleanup()
-
-    @log_exceptions
-    def quit(self):
-        """Quit the application."""
-        logger.info("Shutting down BlackboxAI")
-        Gtk.main_quit()
-        return False
-
-    @log_exceptions
-    def cleanup(self):
-        """Clean up resources before exit."""
+    async def cleanup(self, *args):
+        """Clean up resources."""
+        logger.info("Cleaning up...")
+        
         if self.hotkey_listener:
             self.hotkey_listener.stop()
         
         if self.chat_service:
-            self.chat_service.close()
+            await self.chat_service.cleanup()
         
         logger.info("Cleanup complete")
 
 def main():
     """Main entry point."""
     app = BlackboxAI()
-    sys.exit(app.run())
+    loop = asyncio.get_event_loop()
+
+    try:
+        # Initialize the application
+        loop.run_until_complete(app.initialize())
+
+        # Set up signal handlers
+        for sig in (signal.SIGINT, signal.SIGTERM):
+            loop.add_signal_handler(sig, lambda: asyncio.create_task(app.cleanup()))
+
+        # Show the window
+        app.window.show_all()
+
+        # Start the GTK main loop
+        GLib.MainLoop().run()
+
+    except Exception as e:
+        logger.error(f"Failed to initialize. Exiting.")
+        loop.run_until_complete(app.cleanup())
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

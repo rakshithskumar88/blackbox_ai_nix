@@ -1,28 +1,53 @@
 """
 Chat service implementation for the BlackboxAI application.
-This module handles communication with the AI service.
 """
 
+import aiohttp
 import asyncio
+import json
 import logging
-import time
-from typing import Optional
-from concurrent.futures import ThreadPoolExecutor
-from .config import SIMULATED_RESPONSE_DELAY
-from .utils import log_exceptions
+from typing import Optional, Dict, Any
 
 logger = logging.getLogger(__name__)
-thread_pool = ThreadPoolExecutor(max_workers=4)
 
 class ChatService:
+    """
+    Handles communication with various AI models and services.
+    """
     def __init__(self):
+        self._session: Optional[aiohttp.ClientSession] = None
+        self._current_model = "DeepSeek-V3"
+        self._api_endpoints = {
+            "DeepSeek-V3": "https://api.deepseek.com/v3/chat",
+            "DeepSeek-R1": "https://api.deepseek.com/r1/chat",
+            "Meta-Llama-3.3-70B": "https://api.meta.com/llama/v3.3/chat",
+            "Gemini-Flash-2.0": "https://api.google.com/gemini/flash/v2/chat",
+            "GPT-4o": "https://api.openai.com/v1/chat",
+            "Claude-Sonnet-3.7": "https://api.anthropic.com/v1/chat"
+        }
+        self._context = []
+
+    async def initialize(self):
         """Initialize the chat service."""
-        self.logger = logging.getLogger(__name__)
+        if self._session is None:
+            self._session = aiohttp.ClientSession()
 
-    @log_exceptions
-    async def send_message_async(self, message: str) -> str:
+    async def cleanup(self):
+        """Clean up resources."""
+        if self._session is not None:
+            await self._session.close()
+            self._session = None
+
+    def set_model(self, model_name: str):
+        """Set the current AI model to use."""
+        if model_name in self._api_endpoints:
+            self._current_model = model_name
+        else:
+            raise ValueError(f"Unknown model: {model_name}")
+
+    async def process_message(self, message: str) -> str:
         """
-        Send a message to the AI service asynchronously.
+        Process a user message and get AI response.
         
         Args:
             message: The user's message
@@ -30,82 +55,79 @@ class ChatService:
         Returns:
             The AI's response
         """
-        # TODO: Implement actual API integration
-        # For now, simulate AI responses
-        return await self._simulate_ai_response(message)
+        # Add message to context
+        self._context.append({"role": "user", "content": message})
 
-    @log_exceptions
-    def send_message(self, message: str) -> str:
-        """
-        Synchronous version of send_message_async.
-        
-        Args:
-            message: The user's message
-            
-        Returns:
-            The AI's response
-        """
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
         try:
-            return loop.run_until_complete(self.send_message_async(message))
-        finally:
-            loop.close()
+            # For now, simulate AI response
+            # TODO: Implement actual API calls
+            response = await self._simulate_ai_response(message)
+            
+            # Add response to context
+            self._context.append({"role": "assistant", "content": response})
+            
+            return response
+
+        except Exception as e:
+            logger.error(f"Error processing message: {str(e)}")
+            return f"Error: {str(e)}"
 
     async def _simulate_ai_response(self, message: str) -> str:
         """
-        Simulate AI responses for testing and development.
-        
-        Args:
-            message: The user's message
-            
-        Returns:
-            A simulated AI response
+        Simulate AI response for development.
+        In production, this would make actual API calls.
         """
-        # Simulate processing delay
-        await asyncio.sleep(SIMULATED_RESPONSE_DELAY)
-        
-        # Simple response logic
-        message = message.lower()
-        
-        if "hello" in message or "hi" in message:
-            return "Hello! How can I help you today?"
-        
-        elif "help" in message:
-            return ("I can help you with:\n"
-                   "- Explaining code\n"
-                   "- Answering programming questions\n"
-                   "- Providing code examples\n"
-                   "Just ask me anything!")
-        
-        elif "code" in message or "program" in message:
-            return ("I'd be happy to help with your coding questions. "
-                   "Could you provide more specific details about what you need?")
-        
-        elif "?" in message:
-            return ("That's an interesting question. Could you provide more context "
-                   "so I can give you a more detailed answer?")
-        
+        # Simulate network delay
+        await asyncio.sleep(1)
+
+        # Simple response generation
+        if "hello" in message.lower():
+            return "Hello! How can I assist you today?"
+        elif "help" in message.lower():
+            return "I'm here to help! You can ask me questions, request code explanations, or get assistance with various tasks."
+        elif "code" in message.lower():
+            return "I can help you understand code, suggest improvements, or help you debug issues. What specific code would you like to discuss?"
+        elif "explain" in message.lower():
+            return "I'll do my best to explain that clearly. Could you provide more specific details about what you'd like me to explain?"
         else:
-            return ("I understand you're saying: '{}'\n"
-                   "How can I help you with that?").format(message)
+            return f"I understand you're asking about '{message}'. Let me help you with that..."
 
-    @log_exceptions
-    def process_code(self, code: str) -> Optional[str]:
+    async def web_search(self, query: str) -> str:
         """
-        Process code snippets for explanation or enhancement.
+        Perform a web search for additional context.
         
         Args:
-            code: The code snippet to process
+            query: The search query
             
         Returns:
-            Explanation or enhanced version of the code
+            Search results as a formatted string
         """
-        # TODO: Implement actual code processing logic
-        # For now, return a simple explanation
-        return f"This code appears to be {len(code.split())} words long. " \
-               f"Would you like me to explain its functionality?"
+        # TODO: Implement actual web search
+        return f"Web search results for: {query}"
 
-    def close(self):
-        """Clean up any resources."""
-        thread_pool.shutdown(wait=False)
+    async def deep_research(self, topic: str) -> str:
+        """
+        Perform in-depth research on a topic.
+        
+        Args:
+            topic: The research topic
+            
+        Returns:
+            Research results as a formatted string
+        """
+        # TODO: Implement actual research
+        return f"Deep research results for: {topic}"
+
+    def clear_context(self):
+        """Clear the conversation context."""
+        self._context = []
+
+    @property
+    def current_model(self) -> str:
+        """Get the current AI model name."""
+        return self._current_model
+
+    @property
+    def available_models(self) -> list:
+        """Get list of available AI models."""
+        return list(self._api_endpoints.keys())
