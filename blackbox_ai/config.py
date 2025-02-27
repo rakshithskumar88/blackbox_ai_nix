@@ -8,10 +8,10 @@ import logging
 HOTKEY = "ctrl+alt+b"  # Default global hotkey to toggle the application
 
 # Window Configuration
-WINDOW_TITLE = "Blackbox AI"
-WINDOW_WIDTH = 800
-WINDOW_HEIGHT = 600
-WINDOW_OPACITY = 0.95
+WINDOW_TITLE = "Ask Blackbox AI Anything"
+WINDOW_WIDTH = 900  # Match the Mac app width
+WINDOW_HEIGHT = 600  # Match the Mac app height
+WINDOW_OPACITY = 1.0  # Full opacity like Mac app
 
 # UI Configuration
 STYLE_PATH = "style.css"
@@ -83,3 +83,50 @@ FEATURES = {
 # Development Settings
 DEBUG = False
 SIMULATE_API = True  # Use simulated responses for development
+
+# Toolbar Configuration
+TOOLBAR_BUTTONS = [
+    {
+        'label': 'Web Search',
+        'icon': 'system-search',
+        'tooltip': 'Search the web for information'
+    },
+    {
+        'label': 'Deep Research',
+        'icon': 'edit-find',
+        'tooltip': 'Perform in-depth research'
+    },
+    {
+        'label': 'Models',
+        'icon': 'applications-science',
+        'tooltip': 'Select AI model'
+    },
+    {
+        'label': 'Beast Mode',
+        'icon': 'weather-storm',
+        'tooltip': 'Enable advanced features'
+    },
+    {
+        'label': 'Image',
+        'icon': 'image-x-generic',
+        'tooltip': 'Generate or analyze images'
+    },
+    {
+        'label': 'Upload',
+        'icon': 'document-send',
+        'tooltip': 'Upload files for analysis'
+    },
+    {
+        'label': 'Customize',
+        'icon': 'preferences-system',
+        'tooltip': 'Customize settings'
+    },
+    {
+        'label': 'Multi-Panel',
+        'icon': 'view-grid',
+        'tooltip': 'Open multiple chat panels'
+    }
+]
+
+# Input Configuration
+INPUT_PLACEHOLDER = "Message Blackbox or @mention agent"
