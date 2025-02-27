@@ -11,7 +11,8 @@ from pathlib import Path
 from ..config import (
     WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT,
     WINDOW_OPACITY, STYLE_PATH, TOOLBAR_BUTTONS,
-    INPUT_PLACEHOLDER, API_ENDPOINTS
+    INPUT_PLACEHOLDER, API_ENDPOINTS, WINDOW_SUBTITLE,
+    SHORTCUTS
 )
 from ..utils import log_exceptions, safe_gtk_call
 
@@ -27,8 +28,8 @@ class MainWindow(Gtk.Window):
         # Set up header bar
         header_bar = Gtk.HeaderBar()
         header_bar.set_show_close_button(True)
-        header_bar.set_title("Ask Blackbox AI Anything")
-        header_bar.set_subtitle("Join +10M users & Fortune 500 companies using the Most Advanced Coding Agent on VSCode #1 on SWE Bench")
+        header_bar.set_title(WINDOW_TITLE)
+        header_bar.set_subtitle(WINDOW_SUBTITLE)
         self.set_titlebar(header_bar)
         
         # Add VSCode button to header bar
@@ -38,14 +39,63 @@ class MainWindow(Gtk.Window):
         vscode_button.add(vscode_icon)
         header_bar.pack_end(vscode_button)
         
+        # Add menu button to header bar
+        menu_button = Gtk.MenuButton()
+        menu_button.set_tooltip_text("Menu")
+        menu_icon = Gtk.Image.new_from_icon_name("open-menu-symbolic", Gtk.IconSize.SMALL_TOOLBAR)
+        menu_button.add(menu_icon)
+        
+        # Create menu
+        menu = Gtk.Menu()
+        
+        # Add menu items with shortcuts
+        for shortcut_name, shortcut_key in SHORTCUTS.items():
+            if shortcut_name != 'toggle_window':  # Skip global hotkey
+                menu_item = Gtk.MenuItem.new_with_label(
+                    f"{shortcut_name.replace('_', ' ').title()} ({shortcut_key})"
+                )
+                menu.append(menu_item)
+        
+        menu.show_all()
+        menu_button.set_popup(menu)
+        header_bar.pack_end(menu_button)
+        
         # Load CSS styling
         self._load_css()
+        
+        # Set up keyboard shortcuts
+        self._setup_shortcuts()
         
         # Set up the UI layout
         self._setup_ui()
         
         # Connect window signals
         self.connect("delete-event", self.on_delete_event)
+        
+    def _setup_shortcuts(self):
+        """Set up keyboard shortcuts."""
+        accel_group = Gtk.AccelGroup()
+        self.add_accel_group(accel_group)
+        
+        # Clear chat shortcut
+        key, mod = Gtk.accelerator_parse(SHORTCUTS['clear_chat'])
+        accel_group.connect(key, mod, Gtk.AccelFlags.VISIBLE, 
+                          lambda *x: self.chat_buffer.set_text(""))
+        
+        # New chat shortcut
+        key, mod = Gtk.accelerator_parse(SHORTCUTS['new_chat'])
+        accel_group.connect(key, mod, Gtk.AccelFlags.VISIBLE,
+                          lambda *x: self._new_chat())
+        
+        # Close window shortcut
+        key, mod = Gtk.accelerator_parse(SHORTCUTS['close_window'])
+        accel_group.connect(key, mod, Gtk.AccelFlags.VISIBLE,
+                          lambda *x: self.hide())
+        
+    def _new_chat(self):
+        """Start a new chat session."""
+        self.chat_buffer.set_text("")
+        self.message_entry.set_text("")
         
     @log_exceptions
     def _load_css(self):
@@ -62,7 +112,7 @@ class MainWindow(Gtk.Window):
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
 
-    def _create_button_with_icon(self, label, icon_name, tooltip=None):
+    def _create_button_with_icon(self, label, icon_name, tooltip=None, shortcut=None):
         """Create a button with both icon and label."""
         button = Gtk.Button()
         box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
@@ -71,8 +121,9 @@ class MainWindow(Gtk.Window):
         icon = Gtk.Image.new_from_icon_name(icon_name, Gtk.IconSize.SMALL_TOOLBAR)
         box.pack_start(icon, False, False, 0)
         
-        # Create label
-        label_widget = Gtk.Label(label=label)
+        # Create label with shortcut
+        label_text = f"{label} ({shortcut})" if shortcut else label
+        label_widget = Gtk.Label(label=label_text)
         box.pack_start(label_widget, True, True, 0)
         
         button.add(box)
@@ -109,12 +160,13 @@ class MainWindow(Gtk.Window):
         model_combo.set_tooltip_text("Select AI model")
         toolbar_box.pack_start(model_combo, False, False, 6)
 
-        # Add toolbar buttons with icons and tooltips
+        # Add toolbar buttons with icons, tooltips, and shortcuts
         for button_config in TOOLBAR_BUTTONS:
             button = self._create_button_with_icon(
                 button_config['label'],
                 button_config['icon'],
-                button_config['tooltip']
+                button_config['tooltip'],
+                button_config['shortcut']
             )
             toolbar_box.pack_start(button, False, False, 2)
 
