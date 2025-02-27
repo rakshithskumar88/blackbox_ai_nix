@@ -1,50 +1,56 @@
 /* Main window styling */
 window {
-    background-color: rgba(30, 30, 30, 0.95);
-    border-radius: 8px;
+    background-color: #ffffff;
+    border-radius: 12px;
 }
 
 /* Chat display area */
 textview {
-    background-color: rgba(30, 30, 30, 0.95);
-    color: #ffffff;
+    background-color: #ffffff;
+    color: #000000;
     font-family: 'Ubuntu', sans-serif;
     font-size: 14px;
-    padding: 10px;
+    padding: 15px;
 }
 
 textview text {
     background-color: transparent;
-    color: #ffffff;
+    color: #000000;
 }
 
 /* Message input area */
 entry {
-    background-color: rgba(45, 45, 45, 0.95);
-    color: #ffffff;
-    border: 1px solid rgba(60, 60, 60, 0.95);
-    border-radius: 4px;
-    padding: 8px;
-    margin: 10px;
+    background-color: #f5f5f5;
+    color: #000000;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 15px;
     font-family: 'Ubuntu', sans-serif;
     font-size: 14px;
+    min-height: 20px;
+}
+
+entry:focus {
+    border-color: #007aff;
 }
 
 /* Send button */
 button {
-    background: linear-gradient(to bottom, #0066cc, #0052a3);
+    background: linear-gradient(to bottom, #007aff, #0066cc);
     color: #ffffff;
     border: none;
-    border-radius: 4px;
-    padding: 8px 15px;
-    margin: 10px;
+    border-radius: 8px;
+    padding: 10px 20px;
+    margin: 15px;
     font-family: 'Ubuntu', sans-serif;
     font-size: 14px;
-    min-width: 80px;
+    min-width: 100px;
+    min-height: 20px;
 }
 
 button:hover {
-    background: linear-gradient(to bottom, #0052a3, #003d7a);
+    background: linear-gradient(to bottom, #0066cc, #0052a3);
 }
 
 button label {
@@ -53,47 +59,74 @@ button label {
 
 /* Model selection area */
 combobox {
-    background-color: rgba(45, 45, 45, 0.95);
-    color: #ffffff;
-    border: 1px solid rgba(60, 60, 60, 0.95);
-    border-radius: 4px;
-    padding: 4px;
-    margin: 5px;
+    background-color: #f5f5f5;
+    color: #000000;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 5px;
+    margin: 10px;
+    min-width: 200px;
 }
 
 combobox button {
     background-color: transparent;
-    color: #ffffff;
+    color: #000000;
     border: none;
     margin: 0;
-    padding: 4px;
+    padding: 5px;
+    min-width: 0;
+    min-height: 0;
 }
 
 combobox button:hover {
-    background-color: rgba(60, 60, 60, 0.95);
+    background-color: #e0e0e0;
+}
+
+combobox button box {
+    padding: 0 5px;
+}
+
+combobox button arrow {
+    color: #666666;
+    min-width: 16px;
+    min-height: 16px;
 }
 
 /* Toolbar area */
 box.toolbar {
-    background-color: rgba(45, 45, 45, 0.95);
-    padding: 5px;
-    border-bottom: 1px solid rgba(60, 60, 60, 0.95);
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-bottom: 1px solid #e0e0e0;
 }
 
 /* Toolbar buttons */
 box.toolbar button {
-    background-color: rgba(60, 60, 60, 0.95);
-    color: #ffffff;
-    border: 1px solid rgba(80, 80, 80, 0.95);
-    border-radius: 4px;
-    padding: 6px 12px;
-    margin: 2px;
-    font-size: 12px;
-    min-width: 100px;
+    background-color: #ffffff;
+    color: #000000;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 8px 15px;
+    margin: 5px;
+    font-size: 13px;
+    min-width: 120px;
+    min-height: 20px;
+    background: none;
 }
 
 box.toolbar button:hover {
-    background-color: rgba(80, 80, 80, 0.95);
+    background-color: #f0f0f0;
+}
+
+box.toolbar button box {
+    spacing: 8px;
+}
+
+box.toolbar button image {
+    color: #666666;
+}
+
+box.toolbar button label {
+    color: #000000;
 }
 
 /* Message styling */
@@ -103,7 +136,7 @@ box.toolbar button:hover {
 }
 
 .ai-message {
-    color: #00ff00;
+    color: #000000;
 }
 
 /* Scrollbar styling */
@@ -125,38 +158,51 @@ scrollbar {
 }
 
 scrollbar slider {
-    background-color: rgba(100, 100, 100, 0.7);
-    border-radius: 4px;
-    min-width: 6px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    min-width: 8px;
 }
 
 scrollbar slider:hover {
-    background-color: rgba(120, 120, 120, 0.8);
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
 /* Dropdown menu styling */
 menu {
-    background-color: rgba(45, 45, 45, 0.95);
-    border: 1px solid rgba(60, 60, 60, 0.95);
-    border-radius: 4px;
-    padding: 4px;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 5px;
 }
 
 menuitem {
-    color: #ffffff;
-    padding: 6px 12px;
+    color: #000000;
+    padding: 8px 15px;
+    border-radius: 4px;
 }
 
 menuitem:hover {
-    background-color: rgba(60, 60, 60, 0.95);
+    background-color: #f5f5f5;
 }
 
 /* Tooltips */
 tooltip {
-    background-color: rgba(45, 45, 45, 0.95);
+    background-color: rgba(0, 0, 0, 0.8);
     color: #ffffff;
-    border: 1px solid rgba(60, 60, 60, 0.95);
     border-radius: 4px;
-    padding: 4px 8px;
+    padding: 8px 12px;
     font-size: 12px;
+}
+
+/* Placeholder text */
+entry > text {
+    color: #999999;
+}
+
+/* Focus styles */
+*:focus {
+    outline-color: #007aff;
+    outline-width: 2px;
+    outline-style: solid;
+    outline-offset: -2px;
 }
