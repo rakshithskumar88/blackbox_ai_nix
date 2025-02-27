@@ -45,10 +45,17 @@ git clone https://github.com/yourusername/blackbox-ai-nixos.git
 cd blackbox-ai-nixos
 ```
 
-3. Create a virtual environment and activate it:
+3. Create a virtual environment with access to system packages:
 ```bash
-python -m venv venv
+# Create virtual environment with system packages access
+python -m venv venv --system-site-packages
 source venv/bin/activate
+
+# Verify GTK packages are available
+python -c "import gi" || echo "Error: GTK packages not found in PYTHONPATH"
+
+# If the above command shows an error, add system Python packages to PYTHONPATH:
+export PYTHONPATH="/usr/lib/python3/dist-packages:${PYTHONPATH}"
 ```
 
 4. Install the package:
@@ -58,6 +65,11 @@ pip install --upgrade pip
 
 # Install the package
 pip install -e .
+```
+
+Note: If you still get "No module named 'gi'" error, try installing the package without a virtual environment:
+```bash
+pip install --user -e .
 ```
 
 After installation, you can run the application using either:
@@ -119,6 +131,10 @@ blackbox_ai/
 2. **GTK Errors**
    - Verify GTK3 is properly installed
    - Check if all required GTK dependencies are available
+   - If you get "No module named 'gi'" error:
+     * Make sure you created the virtual environment with `--system-site-packages`
+     * Try setting PYTHONPATH: `export PYTHONPATH="/usr/lib/python3/dist-packages:${PYTHONPATH}"`
+     * As a last resort, install without virtual environment: `pip install --user -e .`
 
 3. **Window Not Showing**
    - Check your window manager settings
