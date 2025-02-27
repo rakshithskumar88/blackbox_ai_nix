@@ -14,7 +14,7 @@ WINDOW_HEIGHT = 400
 WINDOW_OPACITY = 0.95
 
 # UI Configuration
-STYLE_PATH = "ui/style.css"
+STYLE_PATH = "style.css"
 FONT_FAMILY = "Ubuntu"
 FONT_SIZE = "12px"
 
