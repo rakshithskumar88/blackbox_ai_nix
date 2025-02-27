@@ -60,6 +60,10 @@ class MainWindow(Gtk.Window):
         self.chat_display.set_editable(False)
         self.chat_buffer = self.chat_display.get_buffer()
 
+        # Create text tags
+        self.chat_buffer.create_tag("user-message", foreground="blue")
+        self.chat_buffer.create_tag("ai-message", foreground="green")
+
         # Add chat display to a scrolled window
         scrolled_window = Gtk.ScrolledWindow()
         scrolled_window.set_policy(
