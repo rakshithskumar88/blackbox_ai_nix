@@ -77,22 +77,13 @@ git clone https://github.com/yourusername/blackbox-ai-nixos.git
 cd blackbox-ai-nixos
 ```
 
-3. Create a virtual environment with access to system packages:
+3. Enter the development shell:
 ```bash
-# Create virtual environment with system packages access
-python -m venv venv --system-site-packages
-source venv/bin/activate
+# This will create a virtual environment and set up all required dependencies
+nix-shell
 
-# Verify GTK packages are available
-python -c "import gi" || echo "Error: GTK packages not found in PYTHONPATH"
-
-# If the above command shows an error, try this NixOS-specific approach:
-nix-shell -p python3Packages.pygobject3 python3Packages.pycairo --run "python -c 'import gi'"
-
-# If that works, you can set up the environment permanently:
-PYGI_PATH=$(nix-build --no-out-link '<nixpkgs>' -A python3Packages.pygobject3)
-PYCAIRO_PATH=$(nix-build --no-out-link '<nixpkgs>' -A python3Packages.pycairo)
-export PYTHONPATH="${PYGI_PATH}/lib/python3.10/site-packages:${PYCAIRO_PATH}/lib/python3.10/site-packages:${PYTHONPATH}"
+# The virtual environment will be automatically activated
+# GTK availability will be verified automatically
 ```
 
 4. Install the package:
@@ -102,11 +93,6 @@ pip install --upgrade pip
 
 # Install the package
 pip install -e .
-```
-
-Note: If you still get "No module named 'gi'" error, try installing the package without a virtual environment:
-```bash
-pip install --user -e .
 ```
 
 After installation, you can run the application using either:
@@ -150,6 +136,30 @@ blackbox_ai/
     └── style.css       # GTK CSS styling
 ```
 
+### Development Environment
+
+The project includes a `shell.nix` file that sets up a complete development environment with all required dependencies. To use it:
+
+1. Enter the development shell:
+```bash
+nix-shell
+```
+
+This will:
+- Create a Python virtual environment with system packages access
+- Set up all required GTK environment variables
+- Verify GTK availability
+- Activate the virtual environment automatically
+
+2. Start developing:
+```bash
+# Install in development mode
+pip install -e .
+
+# Run the application
+blackbox-ai
+```
+
 ### Running Tests
 
 ```bash
@@ -167,22 +177,17 @@ blackbox_ai/
 
 2. **GTK Errors**
    - If you get "No module named 'gi'" error:
-     * Make sure you created the virtual environment with `--system-site-packages`
-     * Verify your NixOS configuration has the correct environment variables set (see Installation section)
-     * Try using nix-shell for testing:
-       ```bash
-       nix-shell -p python3Packages.pygobject3 python3Packages.pycairo gtk3 gobject-introspection --run "python -c 'import gi; gi.require_version(\"Gtk\", \"3.0\"); from gi.repository import Gtk'"
-       ```
+     * Make sure you're using the provided development shell: `nix-shell`
+     * Verify your NixOS configuration has the correct environment variables set
+     * Try rebuilding your system: `sudo nixos-rebuild switch`
    
    - If you get "Namespace Gtk not available" error:
-     * Ensure GI_TYPELIB_PATH is set correctly in your NixOS configuration
+     * Ensure you're using the development shell: `nix-shell`
      * Verify the environment variables are loaded:
        ```bash
        echo $GI_TYPELIB_PATH  # Should show paths containing girepository-1.0
        echo $LD_LIBRARY_PATH  # Should include GTK library paths
        ```
-     * Try rebuilding your system: `sudo nixos-rebuild switch`
-     * As a last resort, try running without a virtual environment: `pip install --user -e .`
 
 3. **Window Not Showing**
    - Check your window manager settings
