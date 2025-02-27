@@ -19,6 +19,8 @@ A desktop AI assistant application for NixOS, inspired by the Mac Blackbox AI ap
 
 ## Installation
 
+### Development Installation
+
 1. Clone the repository:
 ```bash
 git clone https://github.com/rakshithskumar88/blackbox_ai_nix.git
@@ -29,26 +31,36 @@ cd blackbox_ai_nix
 ```bash
 # This will set up a complete development environment with all dependencies
 nix-shell
-
-# The shell automatically:
-# - Sets up Python with required packages (PyGObject, pycairo)
-# - Sets up all GTK dependencies and environment variables
-# - Verifies GTK availability
 ```
 
-3. Install the package:
+3. Run the application:
 ```bash
-# Install in development mode
-pip install -e .
-```
-
-After installation, you can run the application using either:
-```bash
-# Using the installed console script
 blackbox-ai
+```
 
-# Or using the module directly
-python -m blackbox_ai
+### System Installation
+
+To install the application system-wide:
+
+```bash
+# Build and install using Nix
+nix-env -f default.nix -i
+```
+
+Or add it to your NixOS configuration:
+
+```nix
+# configuration.nix
+{
+  environment.systemPackages = [
+    (pkgs.callPackage /path/to/blackbox_ai_nix/default.nix {})
+  ];
+}
+```
+
+Then rebuild your system:
+```bash
+sudo nixos-rebuild switch
 ```
 
 ## Usage
@@ -85,26 +97,24 @@ blackbox_ai/
 
 ### Development Environment
 
-The project includes a `shell.nix` file that sets up a complete development environment with all required dependencies. To use it:
+The project uses Nix for reproducible builds and development environments:
 
-1. Enter the development shell:
+- `default.nix`: Defines the application build
+- `shell.nix`: Provides a development environment
+
+The development shell automatically:
+- Sets up Python with GTK bindings
+- Configures all required GTK environment variables
+- Makes the application available in PATH
+
+### Building
+
+To build the application:
 ```bash
-nix-shell
+nix-build
 ```
 
-This will:
-- Set up Python with GTK bindings (PyGObject) and Cairo
-- Configure all required GTK environment variables
-- Verify GTK availability
-
-2. Start developing:
-```bash
-# Install in development mode
-pip install -e .
-
-# Run the application
-blackbox-ai
-```
+This will create a `result` symlink pointing to the built package.
 
 ### Running Tests
 
@@ -122,13 +132,18 @@ blackbox-ai
    - Check if the hotkey is already in use by another application
 
 2. **GTK Errors**
-   - If you get GTK-related errors:
-     * Make sure you're running the application from within the nix-shell
-     * Try exiting the shell completely and entering it again: `exit` then `nix-shell`
-     * Verify GTK is available in the shell:
-       ```bash
-       python -c "import gi; gi.require_version('Gtk', '3.0'); from gi.repository import Gtk"
-       ```
+   - Make sure you're running the application from within the nix-shell
+   - Try rebuilding the development environment:
+     ```bash
+     # Exit current shell if any
+     exit
+     
+     # Remove result if it exists
+     rm -f result
+     
+     # Enter shell again
+     nix-shell
+     ```
 
 3. **Window Not Showing**
    - Check your window manager settings
