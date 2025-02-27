@@ -27,6 +27,7 @@ A desktop AI assistant application for NixOS, inspired by the Mac Blackbox AI ap
 { config, pkgs, ... }:
 
 {
+  # Required system packages
   environment.systemPackages = with pkgs; [
     python3
     python3Packages.pip
@@ -41,9 +42,26 @@ A desktop AI assistant application for NixOS, inspired by the Mac Blackbox AI ap
     glib
   ];
 
-  # Make Python packages available in PATH
+  # Make GTK and Python packages available system-wide
   environment.variables = {
-    PYTHONPATH = "${pkgs.python3Packages.pygobject3}/lib/python3.10/site-packages:${pkgs.python3Packages.pycairo}/lib/python3.10/site-packages";
+    # Add GTK libraries to library path
+    LD_LIBRARY_PATH = lib.makeLibraryPath [
+      pkgs.gtk3
+      pkgs.gobject-introspection
+    ];
+    
+    # Make Python packages available
+    PYTHONPATH = lib.makeSearchPath "lib/python3.12/site-packages" [
+      pkgs.python3Packages.pygobject3
+      pkgs.python3Packages.pycairo
+    ];
+    
+    # Ensure GI typelibs are found
+    GI_TYPELIB_PATH = lib.makeSearchPath "lib/girepository-1.0" [
+      pkgs.gtk3.out
+      pkgs.pango.out
+      pkgs.gobject-introspection
+    ];
   };
 }
 ```
@@ -148,18 +166,23 @@ blackbox_ai/
    - Check if the hotkey is already in use by another application
 
 2. **GTK Errors**
-   - Verify GTK3 is properly installed
-   - Check if all required GTK dependencies are available
    - If you get "No module named 'gi'" error:
      * Make sure you created the virtual environment with `--system-site-packages`
-     * Try using nix-shell: `nix-shell -p python3Packages.pygobject3 python3Packages.pycairo --run "python -c 'import gi'"`
-     * Or set PYTHONPATH using nix-build:
+     * Verify your NixOS configuration has the correct environment variables set (see Installation section)
+     * Try using nix-shell for testing:
        ```bash
-       PYGI_PATH=$(nix-build --no-out-link '<nixpkgs>' -A python3Packages.pygobject3)
-       PYCAIRO_PATH=$(nix-build --no-out-link '<nixpkgs>' -A python3Packages.pycairo)
-       export PYTHONPATH="${PYGI_PATH}/lib/python3.10/site-packages:${PYCAIRO_PATH}/lib/python3.10/site-packages:${PYTHONPATH}"
+       nix-shell -p python3Packages.pygobject3 python3Packages.pycairo gtk3 gobject-introspection --run "python -c 'import gi; gi.require_version(\"Gtk\", \"3.0\"); from gi.repository import Gtk'"
        ```
-     * As a last resort, install without virtual environment: `pip install --user -e .`
+   
+   - If you get "Namespace Gtk not available" error:
+     * Ensure GI_TYPELIB_PATH is set correctly in your NixOS configuration
+     * Verify the environment variables are loaded:
+       ```bash
+       echo $GI_TYPELIB_PATH  # Should show paths containing girepository-1.0
+       echo $LD_LIBRARY_PATH  # Should include GTK library paths
+       ```
+     * Try rebuilding your system: `sudo nixos-rebuild switch`
+     * As a last resort, try running without a virtual environment: `pip install --user -e .`
 
 3. **Window Not Showing**
    - Check your window manager settings
