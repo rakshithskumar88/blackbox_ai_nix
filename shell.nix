@@ -38,9 +38,13 @@ pkgs.mkShell {
     if [ ! -d .venv ]; then
       python -m venv .venv
       source .venv/bin/activate
+      # Add the current directory to PYTHONPATH
+      export PYTHONPATH=$PWD:$PYTHONPATH
       pip install -e .
     else
       source .venv/bin/activate
+      # Add the current directory to PYTHONPATH
+      export PYTHONPATH=$PWD:$PYTHONPATH
     fi
 
     echo "Development environment ready. You can run the application with: python -m blackbox_ai"
